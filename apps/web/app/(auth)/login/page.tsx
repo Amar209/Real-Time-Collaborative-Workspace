@@ -106,6 +106,26 @@ export default function LoginPage() {
             Create one
           </Link>
         </div>
+
+        {/* Subtle Reviewer Helper */}
+        <div className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 text-center text-[11px] text-slate-500">
+          <p className="font-medium text-slate-700">Reviewer Test Account</p>
+          <div className="mt-1 flex items-center justify-center gap-1.5 font-mono text-[10px] text-slate-600">
+            <span>amar@example.com</span>
+            <span>/</span>
+            <span>password123</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail("amar@example.com");
+              setPassword("password123");
+            }}
+            className="mt-1 text-[10px] text-slate-500 hover:text-slate-800 underline transition cursor-pointer"
+          >
+            Auto-fill
+          </button>
+        </div>
       </div>
     </div>
   );

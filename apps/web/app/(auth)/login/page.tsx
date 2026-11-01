@@ -40,9 +40,39 @@ export default function LoginPage() {
     }
   }
 
+  async function autoLogin(loginEmail: string, loginPass: string) {
+    setEmail(loginEmail);
+    setPassword(loginPass);
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: loginEmail, password: loginPass }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to sign in");
+      }
+
+      router.push(`/${data.workspaceSlug}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An error occurred");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12">
-      <div className="w-full max-w-sm space-y-6 rounded-xl border border-slate-200 bg-white p-7 shadow-sm">
+      <div className="w-full max-w-sm space-y-5 rounded-xl border border-slate-200 bg-white p-7 shadow-sm">
         <div className="text-left">
           <h1 className="text-xl font-bold tracking-tight text-slate-900">
             Sign In
@@ -57,7 +87,6 @@ export default function LoginPage() {
             {error}
           </div>
         )}
-
 
         <form
           className="space-y-3.5"
@@ -105,6 +134,53 @@ export default function LoginPage() {
           <Link href="/register" className="text-slate-800 font-medium hover:underline">
             Create one
           </Link>
+        </div>
+
+        {/* Reviewer Multi-User Auto-Login */}
+        <div className="pt-3 border-t border-slate-100">
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2 text-center">
+            Reviewer 1-Click Auto-Login
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => autoLogin("amar@example.com", "password123")}
+              className="flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:border-slate-300 transition text-center cursor-pointer disabled:opacity-50"
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white mb-1">
+                A
+              </div>
+              <span className="text-[11px] font-medium text-slate-800">Amar</span>
+              <span className="text-[9px] text-slate-400">Owner</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => autoLogin("sarah@example.com", "password123")}
+              className="flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:border-slate-300 transition text-center cursor-pointer disabled:opacity-50"
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-pink-500 text-[10px] font-bold text-white mb-1">
+                S
+              </div>
+              <span className="text-[11px] font-medium text-slate-800">Sarah</span>
+              <span className="text-[9px] text-slate-400">Editor</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => autoLogin("alex@example.com", "password123")}
+              className="flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:border-slate-300 transition text-center cursor-pointer disabled:opacity-50"
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white mb-1">
+                A
+              </div>
+              <span className="text-[11px] font-medium text-slate-800">Alex</span>
+              <span className="text-[9px] text-slate-400">Member</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

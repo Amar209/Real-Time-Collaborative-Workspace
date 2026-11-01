@@ -40,7 +40,10 @@ export default function CollaborativeEditor({
   const ydoc = useMemo(() => new Y.Doc(), [docId]);
 
   useEffect(() => {
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:1234";
+    let wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:1234";
+    if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      wsUrl = "wss://long-flowers-start.loca.lt";
+    }
     const wsProvider = new WebsocketProvider(wsUrl, `doc-${docId}`, ydoc);
 
     // Set user awareness state for cursors & active user presence

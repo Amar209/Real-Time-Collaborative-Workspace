@@ -70,6 +70,7 @@ export default function DocumentPage() {
       setUser(data.user);
       setUserRole(data.userRole || "EDITOR");
       setComments(data.document.comments || []);
+      setSnapshots(data.snapshots || data.document.snapshots || []);
     } catch (err) {
       console.error("Fetch document error:", err);
     } finally {
@@ -186,8 +187,12 @@ export default function DocumentPage() {
 
           {/* Comments Pill Button */}
           <button
-            onClick={() => setIsCommentsOpen(!isCommentsOpen)}
-            className="relative flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-apple transition"
+            onClick={() => {
+              setIsCommentsOpen((prev) => !prev);
+              setIsHistoryOpen(false);
+              setIsShareOpen(false);
+            }}
+            className="relative flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-apple transition cursor-pointer"
           >
             <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
             <span>Comments</span>
@@ -200,17 +205,25 @@ export default function DocumentPage() {
 
           {/* Version History Pill Button */}
           <button
-            onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-            className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-apple transition"
+            onClick={() => {
+              setIsHistoryOpen((prev) => !prev);
+              setIsCommentsOpen(false);
+              setIsShareOpen(false);
+            }}
+            className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-apple transition cursor-pointer"
           >
             <History className="h-3.5 w-3.5 text-slate-500" />
             <span>History</span>
           </button>
 
-          {/* Share Button (Mint/Emerald Gradient Pill from Reference Image) */}
+          {/* Share Button (Mint/Emerald Gradient Pill) */}
           <button
-            onClick={() => setIsShareOpen(true)}
-            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-mint hover:opacity-95 transition"
+            onClick={() => {
+              setIsShareOpen(true);
+              setIsCommentsOpen(false);
+              setIsHistoryOpen(false);
+            }}
+            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-mint hover:opacity-95 transition cursor-pointer"
           >
             <Share2 className="h-3.5 w-3.5" />
             <span>Share</span>
@@ -270,6 +283,7 @@ export default function DocumentPage() {
       <ShareModal
         isOpen={isShareOpen}
         onClose={() => setIsShareOpen(false)}
+        docId={docId}
         docTitle={title}
       />
     </div>

@@ -23,7 +23,19 @@ export async function GET(
         },
       },
       permissions: {
-        where: { userId: user.id },
+        include: {
+          user: {
+            select: { id: true, name: true, email: true, avatarColor: true },
+          },
+        },
+      },
+      snapshots: {
+        include: {
+          createdBy: {
+            select: { id: true, name: true, avatarColor: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
       },
       comments: {
         include: {
@@ -43,7 +55,7 @@ export async function GET(
   // Determine user role
   const isOwner = document.workspace.ownerId === user.id;
   const workspaceMember = document.workspace.members[0];
-  const customPerm = document.permissions[0];
+  const customPerm = document.permissions.find((p) => p.userId === user.id);
 
   let role = "VIEWER";
   if (isOwner || workspaceMember?.role === "OWNER") {
@@ -58,6 +70,8 @@ export async function GET(
     document,
     userRole: role,
     user,
+    permissions: document.permissions,
+    snapshots: document.snapshots,
   });
 }
 

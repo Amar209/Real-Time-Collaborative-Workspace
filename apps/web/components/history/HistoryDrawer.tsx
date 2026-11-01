@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { History, X, Plus, RotateCcw, Clock } from "lucide-react";
+import { History, X, Plus, RotateCcw, Clock, Loader2, Check } from "lucide-react";
 
 export interface SnapshotItem {
   id: string;
@@ -20,6 +20,7 @@ interface HistoryDrawerProps {
   docId: string;
   snapshots: SnapshotItem[];
   onSnapshotCreated: (snapshot: SnapshotItem) => void;
+  onSnapshotRestored?: (title: string) => void;
 }
 
 export default function HistoryDrawer({
@@ -28,9 +29,12 @@ export default function HistoryDrawer({
   docId,
   snapshots,
   onSnapshotCreated,
+  onSnapshotRestored,
 }: HistoryDrawerProps) {
   const [creating, setCreating] = useState(false);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
   const [snapshotName, setSnapshotName] = useState("");
+  const [restoreMessage, setRestoreMessage] = useState("");
 
   if (!isOpen) return null;
 
@@ -42,7 +46,7 @@ export default function HistoryDrawer({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: snapshotName || `Checkpoint - ${new Date().toLocaleTimeString()}`,
+          title: snapshotName || `Version ${new Date().toLocaleTimeString()}`,
         }),
       });
       const data = await res.json();
@@ -57,12 +61,41 @@ export default function HistoryDrawer({
     }
   }
 
+  async function handleRestore(snapshot: SnapshotItem) {
+    if (!confirm(`Are you sure you want to restore "${snapshot.title}"? Current edits will be replaced.`)) {
+      return;
+    }
+
+    setRestoringId(snapshot.id);
+    try {
+      const res = await fetch(`/api/documents/${docId}/snapshots`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ snapshotId: snapshot.id }),
+      });
+
+      if (res.ok) {
+        setRestoreMessage(`Restored "${snapshot.title}"! Reloading state...`);
+        if (onSnapshotRestored) {
+          onSnapshotRestored(snapshot.title);
+        }
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      }
+    } catch (err) {
+      console.error("Failed to restore snapshot:", err);
+    } finally {
+      setRestoringId(null);
+    }
+  }
+
   return (
     <div className="fixed inset-y-0 right-0 z-30 flex w-84 flex-col border-l border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-apple-lg">
       <div className="flex items-center justify-between border-b border-slate-200/80 p-4">
         <div className="flex items-center gap-2 text-sm font-bold tracking-tight text-slate-900">
           <History className="h-4 w-4 text-emerald-600" />
-          Version History
+          Version History Timeline
         </div>
         <button
           onClick={onClose}
@@ -71,6 +104,13 @@ export default function HistoryDrawer({
           <X className="h-4 w-4" />
         </button>
       </div>
+
+      {restoreMessage && (
+        <div className="mx-3.5 mt-3 flex items-center gap-1.5 rounded-2xl bg-emerald-50 border border-emerald-200 p-2.5 text-xs font-semibold text-emerald-700">
+          <Check className="h-4 w-4 text-emerald-600" />
+          {restoreMessage}
+        </div>
+      )}
 
       <div className="border-b border-slate-200/80 p-3.5 bg-slate-50/50">
         <form onSubmit={handleCreateSnapshot} className="flex gap-2">
@@ -86,7 +126,7 @@ export default function HistoryDrawer({
             disabled={creating}
             className="flex items-center gap-1 rounded-full bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm disabled:opacity-50"
           >
-            <Plus className="h-3 w-3" />
+            {creating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
             Save
           </button>
         </form>
@@ -124,10 +164,15 @@ export default function HistoryDrawer({
                   <span>{snap.createdBy.name}</span>
                 </div>
                 <button
-                  onClick={() => alert(`Restoring version: ${snap.title}`)}
-                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 transition font-semibold"
+                  onClick={() => handleRestore(snap)}
+                  disabled={restoringId === snap.id}
+                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 transition font-semibold disabled:opacity-50"
                 >
-                  <RotateCcw className="h-3 w-3" />
+                  {restoringId === snap.id ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <RotateCcw className="h-3 w-3" />
+                  )}
                   Restore
                 </button>
               </div>

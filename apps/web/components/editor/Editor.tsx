@@ -42,8 +42,14 @@ export default function CollaborativeEditor({
   useEffect(() => {
     let wsUrl = process.env.NEXT_PUBLIC_WS_URL;
     if (!wsUrl) {
-      if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-        wsUrl = "wss://long-flowers-start.loca.lt";
+      if (typeof window !== "undefined") {
+        const isSecure = window.location.protocol === "https:";
+        const wsProtocol = isSecure ? "wss:" : "ws:";
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+          wsUrl = "ws://localhost:1234";
+        } else {
+          wsUrl = `${wsProtocol}//${window.location.hostname}:1234`;
+        }
       } else {
         wsUrl = "ws://localhost:1234";
       }

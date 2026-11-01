@@ -9,8 +9,12 @@ A real-time, multiplayer collaborative document workspace inspired by **Notion**
 
 * **⚡ Conflict-Free Real-Time Editing (CRDTs)**: Built on **Yjs** and **TipTap (ProseMirror)** to guarantee deterministic state convergence without centralized locks.
 * **👥 Live Multiplayer Presence**: Colored remote cursor carets, user name badges, live text selections, and header avatars showing active online collaborators.
-* **📂 Notion-Grade Document Tree**: Hierarchical nested documents with expandable sidebar, custom emoji icons, and instant document creation.
-* **✍️ Rich Formatting & Tools**: Headings (H1–H3), interactive task lists (checkboxes), code blocks with syntax styling, blockquotes, undo/redo, and floating toolbars.
+* **🔍 Spotlight Quick Search (`Cmd+K` / `Ctrl+K`)**: Instant keyboard-driven command palette to search and jump to any document in the workspace.
+* **💬 Floating Selection Bubble Menu**: Sleek Apple-style floating toolbar appearing upon text selection for immediate formatting (Bold, Italic, Strike, Code, Heading, Quote).
+* **📊 Live Reading & Word Count Statistics**: Real-time word counter, character counter, and estimated reading time indicator in the document status bar.
+* **📑 Table & Grid Editing**: Full support for multi-column and multi-row tables with header rows, row/column addition, and deletion.
+* **📂 Notion-Grade Document Tree & Breadcrumbs**: Hierarchical nested documents with expandable sidebar, breadcrumb navigation, and instant sub-page creation.
+* **💾 One-Click Document Export**: Instant export to Clean Markdown (`.md`) or Print / Save as PDF.
 * **💬 Threaded Inline Comments**: Anchor discussions to specific document blocks, reply to threads, and mark items as resolved.
 * **🕒 Version History & Rollback**: Automatic milestone checkpoints and manual snapshots with one-click revision restore.
 * **🛡️ Role-Based Permissions (RBAC)**: Granular access control (`Owner`, `Editor`, `Commenter`, `Viewer`) with shareable link generation.
@@ -23,7 +27,7 @@ A real-time, multiplayer collaborative document workspace inspired by **Notion**
 | Layer | Technology |
 | :--- | :--- |
 | **Frontend Framework** | [Next.js](https://nextjs.org/) (App Router, React 18, TypeScript) |
-| **Styling & Design System** | [TailwindCSS](https://tailwindcss.com/) + Lucide Icons (Sleek Dark Mode) |
+| **Styling & Design System** | [TailwindCSS](https://tailwindcss.com/) + Apple SF Pro Typography |
 | **Rich-Text Engine** | [TipTap v2](https://tiptap.dev/) (ProseMirror core) |
 | **CRDT Synchronization** | [Yjs](https://yjs.dev/) + `y-protocols/awareness` |
 | **Real-Time Network** | WebSockets via `y-websocket` + Node.js HTTP/WS Server |
@@ -40,8 +44,8 @@ A real-time, multiplayer collaborative document workspace inspired by **Notion**
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/your-username/real-time-collaborative-workspace.git
-cd "real-time-collaborative-workspace"
+git clone https://github.com/Amar209/Real-Time-Collaborative-Workspace.git
+cd "Real-Time-Collaborative-Workspace"
 npm install
 ```
 
@@ -71,7 +75,7 @@ The database comes pre-seeded with 3 test accounts so you can test live collabor
 | **Sarah Chen** | `sarah@example.com` | `password123` | Editor | 🌸 Pink (`#ec4899`) |
 | **Alex Rivera** | `alex@example.com` | `password123` | Member | 🟢 Emerald (`#10b981`) |
 
-*Tip*: On the `/login` page, you can click any of the **"Instant Quick-Login"** buttons for 1-click access!
+*Tip*: You can also create any brand new account on the `/register` page to get a dynamic workspace automatically created for you!
 
 ---
 

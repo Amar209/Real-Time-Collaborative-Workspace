@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,18 +12,15 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleLogin(targetEmail?: string, targetPassword?: string) {
+  async function handleLogin() {
     setError("");
     setLoading(true);
-
-    const emailToSend = targetEmail || email;
-    const passwordToSend = targetPassword || password;
 
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: emailToSend, password: passwordToSend }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -61,36 +58,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Demo Switcher */}
-        <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 mb-2">
-            <Users className="h-3.5 w-3.5" />
-            Quick Demo Logins
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            <button
-              onClick={() => handleLogin("amar@example.com", "password123")}
-              disabled={loading}
-              className="rounded border border-slate-200 bg-white p-2 text-xs font-medium text-slate-800 hover:bg-slate-50 transition"
-            >
-              Amar
-            </button>
-            <button
-              onClick={() => handleLogin("sarah@example.com", "password123")}
-              disabled={loading}
-              className="rounded border border-slate-200 bg-white p-2 text-xs font-medium text-slate-800 hover:bg-slate-50 transition"
-            >
-              Sarah
-            </button>
-            <button
-              onClick={() => handleLogin("alex@example.com", "password123")}
-              disabled={loading}
-              className="rounded border border-slate-200 bg-white p-2 text-xs font-medium text-slate-800 hover:bg-slate-50 transition"
-            >
-              Alex
-            </button>
-          </div>
-        </div>
 
         <form
           className="space-y-3.5"

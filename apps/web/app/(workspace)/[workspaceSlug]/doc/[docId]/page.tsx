@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   MessageSquare,
   History,
@@ -9,6 +10,10 @@ import {
   RefreshCw,
   Trash2,
   Check,
+  Download,
+  Printer,
+  ChevronRight,
+  MoreHorizontal,
 } from "lucide-react";
 import CollaborativeEditor from "@/components/editor/Editor";
 import LiveAvatars, { PresenceUser } from "@/components/presence/LiveAvatars";
@@ -49,6 +54,26 @@ export default function DocumentPage() {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
+
+  function handleDownloadMarkdown() {
+    if (typeof window === "undefined") return;
+    const editorEl = window.document.querySelector(".ProseMirror");
+    const text = editorEl ? (editorEl as HTMLElement).innerText : "";
+    const blob = new Blob([`# ${title}\n\n${text}`], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = window.document.createElement("a");
+    a.href = url;
+    a.download = `${(title || "document").toLowerCase().replace(/[^a-z0-9]/g, "-")}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setIsExportOpen(false);
+  }
+
+  function handlePrint() {
+    setIsExportOpen(false);
+    window.print();
+  }
 
   // Comments & Snapshots
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -117,7 +142,16 @@ export default function DocumentPage() {
     <div className="flex h-full flex-col bg-white">
       {/* Clean, professional Top Navigation Bar */}
       <header className="flex h-12 items-center justify-between border-b border-slate-200/80 bg-white px-6">
-        <div className="flex items-center min-w-0 flex-1">
+        <div className="flex items-center min-w-0 flex-1 gap-2">
+          {/* Breadcrumbs */}
+          <Link
+            href={`/${workspaceSlug}`}
+            className="text-xs text-slate-400 hover:text-slate-700 transition font-medium flex-shrink-0"
+          >
+            Workspace
+          </Link>
+          <ChevronRight className="h-3.5 w-3.5 text-slate-300 flex-shrink-0" />
+
           {/* Clean, Prominent Document Title */}
           <input
             type="text"
@@ -125,7 +159,7 @@ export default function DocumentPage() {
             onChange={(e) => handleTitleChange(e.target.value)}
             disabled={userRole === "VIEWER"}
             placeholder="Untitled"
-            className="bg-transparent text-sm font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-1.5 py-0.5 w-full max-w-md truncate"
+            className="bg-transparent text-sm font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-1.5 py-0.5 w-full max-w-sm truncate"
           />
         </div>
 
@@ -195,6 +229,36 @@ export default function DocumentPage() {
             <Share2 className="h-3 w-3" />
             <span>Share</span>
           </button>
+
+          {/* Export & Actions Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsExportOpen((prev) => !prev)}
+              title="Export & options"
+              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 transition"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+
+            {isExportOpen && (
+              <div className="absolute right-0 mt-1 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg z-40 text-xs text-slate-700">
+                <button
+                  onClick={handleDownloadMarkdown}
+                  className="flex w-full items-center gap-2 rounded px-2.5 py-1.5 hover:bg-slate-50 transition"
+                >
+                  <Download className="h-3.5 w-3.5 text-slate-400" />
+                  <span>Export as Markdown</span>
+                </button>
+                <button
+                  onClick={handlePrint}
+                  className="flex w-full items-center gap-2 rounded px-2.5 py-1.5 hover:bg-slate-50 transition"
+                >
+                  <Printer className="h-3.5 w-3.5 text-slate-400" />
+                  <span>Print / Save PDF</span>
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Delete Document */}
           {userRole === "OWNER" && (

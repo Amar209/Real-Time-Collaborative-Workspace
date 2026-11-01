@@ -15,6 +15,11 @@ import {
   Quote,
   Undo,
   Redo,
+  Table as TableIcon,
+  Minus,
+  Rows,
+  Columns,
+  Trash,
 } from "lucide-react";
 
 interface EditorToolbarProps {
@@ -174,6 +179,63 @@ export default function EditorToolbar({ editor, readOnly }: EditorToolbarProps) 
       >
         <Code className="h-3.5 w-3.5" />
       </button>
+
+      <button
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+        className="rounded p-1 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition"
+        title="Horizontal Divider"
+      >
+        <Minus className="h-3.5 w-3.5" />
+      </button>
+
+      <div className="h-3.5 w-[1px] bg-slate-200 mx-1" />
+
+      {/* Table Controls */}
+      <button
+        onClick={() =>
+          editor
+            .chain()
+            .focus()
+            .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+            .run()
+        }
+        className={`rounded p-1 transition ${
+          editor.isActive("table")
+            ? "bg-slate-100 text-slate-900"
+            : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+        }`}
+        title="Insert 3x3 Table"
+      >
+        <TableIcon className="h-3.5 w-3.5" />
+      </button>
+
+      {editor.isActive("table") && (
+        <>
+          <button
+            onClick={() => editor.chain().focus().addRowAfter().run()}
+            className="rounded p-1 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition text-[10px] flex items-center gap-0.5"
+            title="Add Row Below"
+          >
+            <Rows className="h-3 w-3" />
+            <span>+Row</span>
+          </button>
+          <button
+            onClick={() => editor.chain().focus().addColumnAfter().run()}
+            className="rounded p-1 text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition text-[10px] flex items-center gap-0.5"
+            title="Add Column Right"
+          >
+            <Columns className="h-3 w-3" />
+            <span>+Col</span>
+          </button>
+          <button
+            onClick={() => editor.chain().focus().deleteTable().run()}
+            className="rounded p-1 text-red-500 hover:bg-red-50 transition text-[10px] flex items-center gap-0.5"
+            title="Delete Table"
+          >
+            <Trash className="h-3 w-3" />
+          </button>
+        </>
+      )}
 
       <div className="h-3.5 w-[1px] bg-slate-200 mx-1" />
 

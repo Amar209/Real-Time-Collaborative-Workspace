@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -9,7 +9,9 @@ import {
   ChevronRight,
   LogOut,
   FileText,
+  Search,
 } from "lucide-react";
+import QuickSearchModal from "../search/QuickSearchModal";
 
 interface DocItem {
   id: string;
@@ -39,6 +41,18 @@ export default function Sidebar({ user, workspace, documents, onDocumentCreated 
   const router = useRouter();
   const [collapsedNodes, setCollapsedNodes] = useState<Record<string, boolean>>({});
   const [creating, setCreating] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   async function handleCreateDoc(parentId?: string) {
     setCreating(true);
@@ -156,7 +170,20 @@ export default function Sidebar({ user, workspace, documents, onDocumentCreated 
       </div>
 
       {/* Action Navigation - Subtle & clean */}
-      <div className="px-2 pt-2 pb-1">
+      <div className="px-2 pt-2 pb-1 space-y-1">
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition"
+        >
+          <div className="flex items-center gap-2">
+            <Search className="h-3.5 w-3.5 text-slate-400" />
+            <span>Search</span>
+          </div>
+          <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
+            ⌘K
+          </kbd>
+        </button>
+
         <button
           onClick={() => handleCreateDoc()}
           disabled={creating}
@@ -203,6 +230,12 @@ export default function Sidebar({ user, workspace, documents, onDocumentCreated 
           </button>
         </div>
       </div>
+
+      <QuickSearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        workspaceSlug={workspace.slug}
+      />
     </aside>
   );
 }

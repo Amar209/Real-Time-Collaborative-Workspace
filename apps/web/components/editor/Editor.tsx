@@ -1,17 +1,31 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
+import CharacterCount from "@tiptap/extension-character-count";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import EditorToolbar from "./EditorToolbar";
 import { PresenceUser } from "../presence/LiveAvatars";
+import {
+  Bold,
+  Italic,
+  Strikethrough,
+  Code,
+  Heading2,
+  Quote,
+  Sparkles,
+} from "lucide-react";
 
 interface CollaborativeEditorProps {
   docId: string;
@@ -111,6 +125,13 @@ export default function CollaborativeEditor({
         TaskItem.configure({
           nested: true,
         }),
+        Table.configure({
+          resizable: true,
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
+        CharacterCount,
         Collaboration.configure({
           document: ydoc,
         }),
@@ -139,9 +160,97 @@ export default function CollaborativeEditor({
   return (
     <div className="flex flex-col flex-1 relative">
       <EditorToolbar editor={editor} readOnly={isReadOnly} />
+
+      {editor && !isReadOnly && (
+        <BubbleMenu
+          editor={editor}
+          tippyOptions={{ duration: 100 }}
+          className="flex items-center gap-0.5 rounded-lg border border-slate-200/80 bg-white/95 px-1 py-1 shadow-lg backdrop-blur-md"
+        >
+          <button
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            className={`rounded p-1 text-xs transition ${
+              editor.isActive("bold") ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:bg-slate-50"
+            }`}
+            title="Bold"
+          >
+            <Bold className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            className={`rounded p-1 text-xs transition ${
+              editor.isActive("italic") ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:bg-slate-50"
+            }`}
+            title="Italic"
+          >
+            <Italic className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            className={`rounded p-1 text-xs transition ${
+              editor.isActive("strike") ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:bg-slate-50"
+            }`}
+            title="Strikethrough"
+          >
+            <Strikethrough className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            className={`rounded p-1 text-xs transition ${
+              editor.isActive("code") ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:bg-slate-50"
+            }`}
+            title="Inline Code"
+          >
+            <Code className="h-3.5 w-3.5" />
+          </button>
+          <div className="h-3 w-[1px] bg-slate-200 mx-0.5" />
+          <button
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            className={`rounded p-1 text-xs transition ${
+              editor.isActive("heading", { level: 2 }) ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:bg-slate-50"
+            }`}
+            title="Heading 2"
+          >
+            <Heading2 className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            className={`rounded p-1 text-xs transition ${
+              editor.isActive("blockquote") ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:bg-slate-50"
+            }`}
+            title="Quote"
+          >
+            <Quote className="h-3.5 w-3.5" />
+          </button>
+        </BubbleMenu>
+      )}
+
       <div className="flex-1 overflow-y-auto">
         <EditorContent editor={editor} />
       </div>
+
+      {/* Document Stats & Metadata Footer */}
+      {editor && (
+        <div className="flex items-center justify-between border-t border-slate-100 px-8 py-2 text-[11px] text-slate-400 select-none">
+          <div className="flex items-center gap-3">
+            <span>
+              {editor.storage.characterCount.words()} {editor.storage.characterCount.words() === 1 ? "word" : "words"}
+            </span>
+            <span>•</span>
+            <span>
+              {editor.storage.characterCount.characters()} characters
+            </span>
+            <span>•</span>
+            <span>
+              ~{Math.max(1, Math.ceil(editor.storage.characterCount.words() / 200))} min read
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <Sparkles className="h-3 w-3 text-emerald-500" />
+            <span>CRDT Multi-Instance Synchronized</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

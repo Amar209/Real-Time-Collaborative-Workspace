@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { FileText, Sparkles, Clock, Users, ArrowUpRight, FolderPlus } from "lucide-react";
+import { FileText, Plus, ArrowUpRight } from "lucide-react";
 
 export default async function WorkspaceDashboardPage({
   params,
@@ -28,102 +28,49 @@ export default async function WorkspaceDashboardPage({
 
   if (!workspace) return null;
 
-  const owner = workspace.members.find((m) => m.role === "OWNER")?.user;
-
   return (
-    <div className="mx-auto max-w-5xl px-10 py-14">
-      {/* Editorial Header inspired by Phlox Agency Design */}
-      <div className="relative rounded-3xl border border-slate-200/80 bg-white p-10 shadow-apple-lg overflow-hidden">
-        <div className="relative z-10 max-w-2xl">
-          <span className="inline-block text-xs font-bold tracking-widest uppercase text-emerald-600 mb-2">
-            Active Workspace • Created {new Date(workspace.createdAt).toLocaleDateString()}
-          </span>
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
-            {workspace.name}
-          </h1>
-          <p className="mt-3 text-base text-slate-600 leading-relaxed font-normal">
-            Workspace managed by <span className="font-semibold text-slate-800">{owner?.name || "Workspace Team"}</span>. Multiple team members can co-author simultaneously with live presence and zero merge conflicts.
-          </p>
-
-          {/* Metric Counter Pills (100% Dynamic from Database) */}
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-[#f9f9fb] px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">
-                {workspace.documents.length}
-              </span>
-              <span>{workspace.documents.length === 1 ? "Document" : "Documents"}</span>
-            </div>
-
-            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-[#f9f9fb] px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white">
-                {workspace.members.length}
-              </span>
-              <span>{workspace.members.length === 1 ? "Member" : "Members"}</span>
-            </div>
-
-            {/* Live Collaborators Avatars */}
-            <div className="flex items-center -space-x-2 pl-2">
-              {workspace.members.slice(0, 5).map((m) => (
-                <div
-                  key={m.id}
-                  title={`${m.user.name} (${m.role})`}
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold text-white ring-2 ring-white shadow-sm"
-                  style={{ backgroundColor: m.user.avatarColor || "#10b981" }}
-                >
-                  {m.user.name.charAt(0)}
-                </div>
-              ))}
-            </div>
-          </div>
+    <div className="mx-auto max-w-4xl px-8 py-10">
+      {/* Clean Workspace Header */}
+      <div className="border-b border-slate-200 pb-6">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          {workspace.name}
+        </h1>
+        <div className="mt-2 flex items-center gap-4 text-xs text-slate-500">
+          <span>{workspace.documents.length} {workspace.documents.length === 1 ? "page" : "pages"}</span>
+          <span>•</span>
+          <span>{workspace.members.length} {workspace.members.length === 1 ? "collaborator" : "collaborators"}</span>
         </div>
-
-        {/* Decorative soft geometric curve inspired by Phlox design */}
-        <div className="absolute -right-20 -bottom-20 h-96 w-96 rounded-full border-[32px] border-slate-100/80 pointer-events-none" />
       </div>
 
-      {/* Documents Section */}
-      <div className="mt-12">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">Workspace Documents</h2>
-            <p className="text-xs text-slate-500">Pick any document to begin live co-authoring</p>
-          </div>
+      {/* Pages List */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            All Documents
+          </h2>
         </div>
 
         {workspace.documents.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 p-12 text-center bg-white shadow-sm">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 mb-3">
-              <FolderPlus className="h-6 w-6" />
-            </div>
-            <h3 className="text-sm font-bold text-slate-900">No documents yet</h3>
-            <p className="text-xs text-slate-500 mt-1">Click &quot;New Document&quot; in the sidebar to create your first page.</p>
+          <div className="rounded-lg border border-dashed border-slate-200 p-8 text-center bg-slate-50/50">
+            <p className="text-sm text-slate-500">No pages in this workspace yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-5">
+          <div className="divide-y divide-slate-100 rounded-lg border border-slate-200/80 bg-white">
             {workspace.documents.map((doc) => (
               <Link
                 key={doc.id}
                 href={`/${workspace.slug}/doc/${doc.id}`}
-                className="group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-apple transition-all duration-200 hover:border-emerald-500/60 hover:shadow-apple-lg hover:-translate-y-0.5"
+                className="group flex items-center justify-between p-4 transition-colors hover:bg-slate-50"
               >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-3xl p-2 rounded-2xl bg-[#f9f9fb] border border-slate-100 inline-block">
-                      {doc.icon || "📄"}
-                    </span>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition">
-                      <ArrowUpRight className="h-4 w-4" />
-                    </div>
-                  </div>
-                  <h3 className="mt-4 text-base font-bold text-slate-900 group-hover:text-emerald-600 transition tracking-tight">
-                    {doc.title || "Untitled Document"}
-                  </h3>
-                </div>
-                <div className="mt-6 flex items-center justify-between text-xs text-slate-400 font-medium border-t border-slate-100 pt-3">
-                  <span>Updated {new Date(doc.updatedAt).toLocaleDateString()}</span>
-                  <span className="text-emerald-600 font-semibold opacity-0 group-hover:opacity-100 transition">
-                    Open Document →
+                <div className="flex items-center gap-3 min-w-0">
+                  <FileText className="h-4 w-4 text-slate-400 group-hover:text-slate-800 transition-colors flex-shrink-0" />
+                  <span className="text-sm font-medium text-slate-900 truncate">
+                    {doc.title || "Untitled"}
                   </span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-slate-400">
+                  <span>{new Date(doc.updatedAt).toLocaleDateString()}</span>
+                  <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 text-slate-600 transition-opacity" />
                 </div>
               </Link>
             ))}

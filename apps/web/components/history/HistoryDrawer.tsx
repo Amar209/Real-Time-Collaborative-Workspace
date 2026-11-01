@@ -91,40 +91,40 @@ export default function HistoryDrawer({
   }
 
   return (
-    <div className="fixed inset-y-0 right-0 z-30 flex w-84 flex-col border-l border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-apple-lg">
-      <div className="flex items-center justify-between border-b border-slate-200/80 p-4">
-        <div className="flex items-center gap-2 text-sm font-bold tracking-tight text-slate-900">
-          <History className="h-4 w-4 text-emerald-600" />
-          Version History Timeline
+    <div className="fixed inset-y-0 right-0 z-30 flex w-80 flex-col border-l border-slate-200 bg-white shadow-xl">
+      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+          <History className="h-4 w-4 text-slate-500" />
+          Version History
         </div>
         <button
           onClick={onClose}
-          className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
+          className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
       {restoreMessage && (
-        <div className="mx-3.5 mt-3 flex items-center gap-1.5 rounded-2xl bg-emerald-50 border border-emerald-200 p-2.5 text-xs font-semibold text-emerald-700">
+        <div className="mx-3 mt-3 flex items-center gap-1.5 rounded-md bg-slate-50 border border-slate-200 p-2.5 text-xs text-slate-700">
           <Check className="h-4 w-4 text-emerald-600" />
           {restoreMessage}
         </div>
       )}
 
-      <div className="border-b border-slate-200/80 p-3.5 bg-slate-50/50">
+      <div className="border-b border-slate-200 p-3 bg-slate-50/50">
         <form onSubmit={handleCreateSnapshot} className="flex gap-2">
           <input
             type="text"
             value={snapshotName}
             onChange={(e) => setSnapshotName(e.target.value)}
             placeholder="Checkpoint title..."
-            className="flex-1 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs text-slate-900 placeholder-slate-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="flex-1 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none"
           />
           <button
             type="submit"
             disabled={creating}
-            className="flex items-center gap-1 rounded-full bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition disabled:opacity-50"
           >
             {creating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
             Save

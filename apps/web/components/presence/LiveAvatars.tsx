@@ -31,19 +31,18 @@ export default function LiveAvatars({ users }: LiveAvatarsProps) {
   }
 
   return (
-    <div className="flex items-center -space-x-2 overflow-hidden">
+    <div className="flex items-center -space-x-1.5 overflow-hidden">
       {uniqueUsers.map((u) => (
         <div
           key={u.clientId || u.name}
-          title={`${u.name} (Active now)`}
-          className="relative inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ring-2 ring-white shadow-sm transition hover:z-10 hover:scale-105"
-          style={{ backgroundColor: u.color || u.avatarColor || "#10b981" }}
+          title={`${u.name} (Active)`}
+          className="relative inline-flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold text-white ring-1.5 ring-white transition hover:scale-105"
+          style={{ backgroundColor: u.color || u.avatarColor || "#0f172a" }}
         >
           {u.name.charAt(0).toUpperCase()}
-          <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
         </div>
       ))}
-      <span className="pl-3.5 text-xs font-semibold text-slate-500 tracking-tight">
+      <span className="pl-2 text-xs text-slate-400 font-normal">
         {uniqueUsers.length} online
       </span>
     </div>

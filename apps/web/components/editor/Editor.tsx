@@ -116,7 +116,7 @@ export default function CollaborativeEditor({
       editorProps: {
         attributes: {
           class:
-            "prose max-w-none focus:outline-none min-h-[600px] text-slate-800 px-12 py-8 text-[1.0625rem] leading-relaxed",
+            "prose max-w-none focus:outline-none min-h-[500px] text-slate-800 text-base leading-relaxed py-4",
         },
       },
     },

@@ -1,0 +1,102 @@
+// Prisma schema for Real-Time Collaborative Workspace (FS-02)
+// Supports zero-configuration local development (SQLite) and production (PostgreSQL)
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String             @id @default(uuid())
+  email         String             @unique
+  name          String
+  passwordHash  String
+  avatarColor   String             @default("#3b82f6")
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  workspaces    WorkspaceMember[]
+  documents     DocumentPermission[]
+  comments      Comment[]
+  snapshots     DocumentSnapshot[]
+}
+
+model Workspace {
+  id          String            @id @default(uuid())
+  name        String
+  slug        String            @unique
+  ownerId     String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  members     WorkspaceMember[]
+  documents   Document[]
+}
+
+model WorkspaceMember {
+  id          String     @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        String     @default("EDITOR") // OWNER, ADMIN, MEMBER
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+model Document {
+  id            String               @id @default(uuid())
+  workspaceId   String
+  parentDocId   String?
+  title         String               @default("Untitled")
+  icon          String?              @default("📄")
+  coverImage    String?
+  contentBinary Bytes?               // Yjs CRDT binary state update
+  contentJson   String?              // Fallback / plain text representation
+  isArchived    Boolean              @default(false)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  workspace     Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parentDoc     Document?            @relation("DocumentHierarchy", fields: [parentDocId], references: [id], onDelete: SetNull)
+  subDocs       Document[]           @relation("DocumentHierarchy")
+  permissions   DocumentPermission[]
+  comments      Comment[]
+  snapshots     DocumentSnapshot[]
+}
+
+model DocumentPermission {
+  id         String   @id @default(uuid())
+  documentId String
+  userId     String
+  role       String   @default("EDITOR") // OWNER, EDITOR, COMMENTER, VIEWER
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, userId])
+}
+
+model DocumentSnapshot {
+  id             String   @id @default(uuid())
+  documentId     String
+  createdById    String
+  title          String
+  snapshotBinary Bytes    // Complete Yjs binary snapshot at milestone checkpoint
+  createdAt      DateTime @default(now())
+  document       Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  createdBy      User     @relation(fields: [createdById], references: [id])
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  documentId String
+  authorId   String
+  blockId    String?  // Anchored block identifier
+  content    String
+  resolved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}

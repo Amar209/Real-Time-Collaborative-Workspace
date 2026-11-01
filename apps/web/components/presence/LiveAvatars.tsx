@@ -16,7 +16,6 @@ interface LiveAvatarsProps {
 }
 
 export default function LiveAvatars({ users }: LiveAvatarsProps) {
-  // Deduplicate users by name
   const uniqueUsers = useMemo(() => {
     const map = new Map<string, PresenceUser>();
     users.forEach((u) => {
@@ -37,14 +36,14 @@ export default function LiveAvatars({ users }: LiveAvatarsProps) {
         <div
           key={u.clientId || u.name}
           title={`${u.name} (Active now)`}
-          className="relative inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold text-white ring-2 ring-[#0b0f19] shadow transition hover:z-10 hover:scale-110"
-          style={{ backgroundColor: u.color || u.avatarColor || "#3b82f6" }}
+          className="relative inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ring-2 ring-white shadow-sm transition hover:z-10 hover:scale-105"
+          style={{ backgroundColor: u.color || u.avatarColor || "#10b981" }}
         >
           {u.name.charAt(0).toUpperCase()}
-          <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-400 ring-1 ring-black" />
+          <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
         </div>
       ))}
-      <span className="pl-3 text-xs font-medium text-slate-400">
+      <span className="pl-3.5 text-xs font-semibold text-slate-500 tracking-tight">
         {uniqueUsers.length} online
       </span>
     </div>

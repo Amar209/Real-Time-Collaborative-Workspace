@@ -6,8 +6,6 @@ import {
   MessageSquare,
   History,
   Share2,
-  Sparkles,
-  Wifi,
   WifiOff,
   RefreshCw,
   Trash2,
@@ -121,20 +119,20 @@ export default function DocumentPage() {
 
   if (loading || !document || !user) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="flex items-center gap-2 text-sm text-slate-400">
-          <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
-          Loading collaborative document...
+      <div className="flex h-full items-center justify-center bg-white">
+        <div className="flex items-center gap-2.5 text-sm text-slate-500 font-medium">
+          <RefreshCw className="h-4 w-4 animate-spin text-emerald-500" />
+          Loading document...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col bg-[#0b0f19]">
+    <div className="flex h-full flex-col bg-white">
       {/* Document Top Bar */}
-      <header className="flex h-14 items-center justify-between border-b border-slate-800/80 bg-[#090d16] px-6">
-        <div className="flex items-center gap-3 min-w-0">
+      <header className="flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/80 px-8 backdrop-blur-md">
+        <div className="flex items-center gap-3.5 min-w-0">
           {/* Icon Selector */}
           <button
             onClick={() => {
@@ -143,7 +141,7 @@ export default function DocumentPage() {
               handleIconChange(next);
             }}
             title="Click to change icon"
-            className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-800 text-lg transition"
+            className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-slate-100 text-xl transition"
           >
             {icon}
           </button>
@@ -155,75 +153,75 @@ export default function DocumentPage() {
             onChange={(e) => handleTitleChange(e.target.value)}
             disabled={userRole === "VIEWER"}
             placeholder="Untitled Document"
-            className="bg-transparent text-base font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 rounded px-1.5 py-0.5 max-w-sm truncate"
+            className="bg-transparent text-lg font-bold tracking-tight text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 rounded-lg px-2 py-0.5 max-w-md truncate"
           />
 
-          {/* Sync Status Badge */}
+          {/* Apple-style Sync Status Pill */}
           <div
-            className={`hidden sm:flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+            className={`hidden sm:flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold tracking-tight ${
               syncStatus === "connected"
-                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
                 : syncStatus === "connecting"
-                ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                : "bg-red-500/10 text-red-400 border border-red-500/20"
+                ? "bg-amber-50 text-amber-700 border border-amber-200/80"
+                : "bg-red-50 text-red-700 border border-red-200/80"
             }`}
           >
             {syncStatus === "connected" ? (
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             ) : syncStatus === "connecting" ? (
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+              <span className="h-2 w-2 rounded-full bg-amber-500" />
             ) : (
               <WifiOff className="h-3 w-3" />
             )}
-            <span className="capitalize">{syncStatus === "connected" ? "Live Sync" : syncStatus}</span>
+            <span>{syncStatus === "connected" ? "Live Sync" : syncStatus}</span>
           </div>
         </div>
 
-        {/* Right Action Icons */}
+        {/* Right Action Controls */}
         <div className="flex items-center gap-3">
           {/* Live Online Collaborators */}
           <LiveAvatars users={presenceUsers} currentUserId={user.id} />
 
-          <div className="h-4 w-[1px] bg-slate-800" />
+          <div className="h-4 w-[1px] bg-slate-200 mx-1" />
 
-          {/* Comments Button */}
+          {/* Comments Pill Button */}
           <button
             onClick={() => setIsCommentsOpen(!isCommentsOpen)}
-            className="relative flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition"
+            className="relative flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-apple transition"
           >
-            <MessageSquare className="h-3.5 w-3.5 text-blue-400" />
+            <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
             <span>Comments</span>
             {comments.length > 0 && (
-              <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white">
+              <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white">
                 {comments.length}
               </span>
             )}
           </button>
 
-          {/* Version History Button */}
+          {/* Version History Pill Button */}
           <button
             onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition"
+            className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-apple transition"
           >
-            <History className="h-3.5 w-3.5 text-emerald-400" />
+            <History className="h-3.5 w-3.5 text-slate-500" />
             <span>History</span>
           </button>
 
-          {/* Share Button */}
+          {/* Share Button (Mint/Emerald Gradient Pill from Reference Image) */}
           <button
             onClick={() => setIsShareOpen(true)}
-            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-500 transition"
+            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-mint hover:opacity-95 transition"
           >
             <Share2 className="h-3.5 w-3.5" />
             <span>Share</span>
           </button>
 
-          {/* Delete Document Button */}
+          {/* Delete Button */}
           {userRole === "OWNER" && (
             <button
               onClick={handleDelete}
               title="Delete document"
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition"
+              className="rounded-full p-2 text-slate-400 hover:bg-red-50 hover:text-red-500 transition"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -232,15 +230,17 @@ export default function DocumentPage() {
       </header>
 
       {/* Main Canvas & Collaborative TipTap Editor */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-4xl py-6">
-          <CollaborativeEditor
-            docId={docId}
-            user={user}
-            userRole={userRole}
-            onPresenceChange={setPresenceUsers}
-            onSyncStatusChange={setSyncStatus}
-          />
+      <div className="flex-1 overflow-y-auto bg-[#fbfbfd]">
+        <div className="mx-auto max-w-4xl py-8 px-4">
+          <div className="rounded-2xl border border-slate-200/70 bg-white shadow-apple-lg overflow-hidden">
+            <CollaborativeEditor
+              docId={docId}
+              user={user}
+              userRole={userRole}
+              onPresenceChange={setPresenceUsers}
+              onSyncStatusChange={setSyncStatus}
+            />
+          </div>
         </div>
       </div>
 

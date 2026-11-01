@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { FileText, Plus, Sparkles, Clock, Users, ArrowUpRight } from "lucide-react";
+import { FileText, Sparkles, Clock, Users, ArrowUpRight } from "lucide-react";
 
 export default async function WorkspaceDashboardPage({
   params,
@@ -29,75 +29,82 @@ export default async function WorkspaceDashboardPage({
   if (!workspace) return null;
 
   return (
-    <div className="mx-auto max-w-4xl px-8 py-12">
-      {/* Header Banner */}
-      <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-8 shadow-xl">
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/20 text-blue-400">
-            <Sparkles className="h-5 w-5" />
+    <div className="mx-auto max-w-5xl px-10 py-14">
+      {/* Editorial Header inspired by Phlox Agency Design */}
+      <div className="relative rounded-3xl border border-slate-200/80 bg-white p-10 shadow-apple-lg overflow-hidden">
+        <div className="relative z-10 max-w-2xl">
+          <span className="inline-block text-xs font-bold tracking-widest uppercase text-emerald-600 mb-2">
+            Workspaces & Knowledge Base
           </span>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">
-              {workspace.name}
-            </h1>
-            <p className="text-sm text-slate-400">
-              Real-time multiplayer workspace • CRDT-powered conflict-free editing
-            </p>
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
+            Welcome to {workspace.name}
+          </h1>
+          <p className="mt-3 text-base text-slate-600 leading-relaxed font-normal">
+            Several people edit the same document at once, see each other&apos;s cursors, and never lose changes.
+          </p>
+
+          {/* Metric Counter Pills inspired by Phlox design (01, 02, 03) */}
+          <div className="mt-8 flex items-center gap-3">
+            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-[#f9f9fb] px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">
+                {workspace.documents.length}
+              </span>
+              <span>Documents</span>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-[#f9f9fb] px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white">
+                {workspace.members.length}
+              </span>
+              <span>Collaborators</span>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-[#f9f9fb] px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>CRDT & Redis Live</span>
+            </div>
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="mt-6 grid grid-cols-3 gap-4 border-t border-slate-800/80 pt-6">
-          <div className="rounded-xl bg-slate-900/60 p-4 border border-slate-800/60">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-              <FileText className="h-4 w-4 text-blue-400" />
-              Total Documents
-            </div>
-            <p className="mt-2 text-2xl font-bold text-white">{workspace.documents.length}</p>
-          </div>
-          <div className="rounded-xl bg-slate-900/60 p-4 border border-slate-800/60">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-              <Users className="h-4 w-4 text-pink-400" />
-              Team Members
-            </div>
-            <p className="mt-2 text-2xl font-bold text-white">{workspace.members.length}</p>
-          </div>
-          <div className="rounded-xl bg-slate-900/60 p-4 border border-slate-800/60">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-              <Clock className="h-4 w-4 text-emerald-400" />
-              Sync Engine
-            </div>
-            <p className="mt-2 text-2xl font-bold text-emerald-400">Yjs + Redis</p>
-          </div>
-        </div>
+        {/* Decorative soft geometric curve inspired by Phlox circle layout */}
+        <div className="absolute -right-20 -bottom-20 h-96 w-96 rounded-full border-[32px] border-slate-100/80 pointer-events-none" />
       </div>
 
-      {/* Recent Documents */}
-      <div className="mt-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Documents</h2>
-          <span className="text-xs text-slate-400">Select a document to collaborate live</span>
+      {/* Documents Section */}
+      <div className="mt-12">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Recent Documents</h2>
+            <p className="text-xs text-slate-500">Pick a document to start co-authoring in real-time</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-5">
           {workspace.documents.map((doc) => (
             <Link
               key={doc.id}
               href={`/${workspace.slug}/doc/${doc.id}`}
-              className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/40 p-5 transition hover:border-blue-500/50 hover:bg-slate-900/80 shadow-md"
+              className="group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-apple transition-all duration-200 hover:border-emerald-500/60 hover:shadow-apple-lg hover:-translate-y-0.5"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-3xl">{doc.icon || "📄"}</span>
-                  <ArrowUpRight className="h-4 w-4 text-slate-500 group-hover:text-blue-400 transition" />
+                  <span className="text-3xl p-2 rounded-2xl bg-[#f9f9fb] border border-slate-100 inline-block">
+                    {doc.icon || "📄"}
+                  </span>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </div>
                 </div>
-                <h3 className="mt-3 font-semibold text-white group-hover:text-blue-400 transition">
+                <h3 className="mt-4 text-base font-bold text-slate-900 group-hover:text-emerald-600 transition tracking-tight">
                   {doc.title || "Untitled Document"}
                 </h3>
               </div>
-              <p className="mt-4 text-xs text-slate-500">
-                Updated {new Date(doc.updatedAt).toLocaleDateString()}
-              </p>
+              <div className="mt-6 flex items-center justify-between text-xs text-slate-400 font-medium border-t border-slate-100 pt-3">
+                <span>Updated {new Date(doc.updatedAt).toLocaleDateString()}</span>
+                <span className="text-emerald-600 font-semibold opacity-0 group-hover:opacity-100 transition">
+                  Open Document →
+                </span>
+              </div>
             </Link>
           ))}
         </div>

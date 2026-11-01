@@ -30,9 +30,9 @@ export default async function WorkspaceLayout({
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0b0f19]">
+    <div className="flex h-screen w-screen overflow-hidden bg-white">
       <Sidebar user={user} workspace={workspace} documents={workspace.documents} />
-      <main className="flex-1 overflow-y-auto bg-[#0d121f] text-slate-100">
+      <main className="flex-1 overflow-y-auto bg-[#fbfbfd] text-slate-900">
         {children}
       </main>
     </div>
